@@ -1,0 +1,15 @@
+name : DeltaTimesX
+main : org.deltatimes.deltatimes.main
+version : 0.132
+api-version: 1.12
+author : captain0potlid
+commands :
+  nick :
+  report :
+  vipdancepartyxlolx :
+  admingui :
+  adminscript :
+  npcprivateruncode :
+  test :
+  miyeonshi :
+  testw :
