@@ -1,0 +1,7 @@
+name : Duray-Project
+main : org.duray.duray.main
+version : 0.2
+api-version: 1.12
+author : UU_04
+commands :
+  test:
