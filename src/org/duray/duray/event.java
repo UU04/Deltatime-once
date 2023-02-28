@@ -6,10 +6,18 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.duray.duray.calculation.signs;
 import org.duray.duray.job.economy;
 import org.duray.duray.job.jobs;
+import org.duray.duray.sound.jukebox;
+
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -76,19 +84,48 @@ public class event implements Listener {
 		Player p = e.getPlayer();
 		
 		if(e.getClickedBlock() == null || e.getAction() == null || e.getClickedBlock().getType() == null) return;
+		
+		//bank
+		if(e.getClickedBlock().getType().toString().contains("CHEST") & e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			Block b = e.getClickedBlock();
+			Chest chest = (Chest) b.getLocation().getBlock().getState();
+			Inventory inv = chest.getBlockInventory();
+			
+			for (int i = 0; i < inv.getContents().length; i++) {
+				if(inv.getItem(i) == null) continue;
+				if(inv.getItem(i).getType() == null) continue;
+				if(inv.getItem(i).getType() == Material.AIR) continue;
+				if(inv.getItem(i).getItemMeta().getDisplayName()== null) continue;
+				if(inv.getItem(i).getItemMeta().getDisplayName().contains("bank")) {
+					e.setCancelled(true);
+					p.sendMessage("Bank");
+					jukebox.Money_Work(p);
+					return;
+				}
+			}
+		}
+		
+		//door roles
 		if(!e.getClickedBlock().getType().toString().contains("DOOR")) return;
 
-		if(e.getClickedBlock().getType().toString().contains("DOOR") | e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+		if(e.getClickedBlock().getType().toString().contains("DOOR") & e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if(signs.signchk(p, e) != null) {
 				if(!signs.signchk(p, e).contains(jobs.Get(p))) {
-					e.setCancelled(true);
+					NoPermHey(p, e);
 				}
 			}
 			if(signs.signchkdown(p, e) != null) {
 				if(!signs.signchkdown(p, e).contains(jobs.Get(p))) {
-					e.setCancelled(true);
+					NoPermHey(p, e);
 				}
 			}
 		}
+	}
+	
+	public static void NoPermHey(Player p, PlayerInteractEvent e) {
+		jukebox.Not_Allowed(p);
+		e.setCancelled(true);
+		String msg = ChatColor.RED + "*" + ChatColor.GRAY + " 권한이 없어 해당 동작이 불가능합니다.";
+		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(msg));
 	}
 }
